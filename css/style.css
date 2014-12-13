@@ -1,0 +1,157 @@
+/* general styles */
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding-top: 50px;
+  padding-bottom: 10px;
+}
+/*@media (max-width: 979px) {
+  body {
+    padding-top: 0px;
+  }
+}*/
+
+/* padded section */
+.pad-section {
+  padding: 50px 0;
+}
+.pad-section img {
+  width: 100%;
+}
+
+/* vertical-centered text */
+.text-vcenter {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+.text-vcenter h1 {
+  font-size: 4.5em;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+
+/* additional sections */
+#description {
+  color: white;
+  font-family: Arial, sans-serif;
+  font-family: 'Lato', sans-serif;
+  width: 100%;
+  background-color: #004545;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#demo {
+  background-color: #002020;
+  color: white;
+  min-height:100%;
+  font-family: Arial, sans-serif;
+  font-family: 'Lato', sans-serif;
+  font-size: 20px;
+  padding: 20px;
+}
+
+footer {
+  background-color: #001919;
+  color: #006565;
+  padding: 20px 0;
+  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+footer .glyphicon {
+  color: #333333;
+  font-size: 60px;
+}
+footer .glyphicon:hover {
+  color: #306d9f;
+}
+footer hr{
+  border: 0;
+}
+p {
+  font-size: 15px;
+}
+
+.splash-image{
+  height: 200px;
+  width: 200px;
+} 
+/*#canvas-container {
+  width: 350px;
+  height: 250px;
+}*/
+.carousel-inner > .item > img{
+  width:640px;
+  height:360px;
+}
+.carousel-caption h3{
+  background-color: #006565;
+}
+
+/* -------------- REDEFINING BOOTSTRAP STYLES ---------------- */
+.navbar-default {
+  background-color: #001919;
+  border-color: #022a2a;
+  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+.navbar-default .navbar-brand {
+  color: #006565;
+}
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+  color: #004545;
+}
+.navbar-default .navbar-text {
+  color: #006565;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #006565;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: #004545;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+  color: #004545;
+  background-color: #022a2a;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+  color: #004545;
+  background-color: #022a2a;
+}
+.navbar-default .navbar-toggle {
+  border-color: #022a2a;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+  background-color: #022a2a;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #006565;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+  border-color: #006565;
+}
+.navbar-default .navbar-link {
+  color: #006565;
+}
+.navbar-default .navbar-link:hover {
+  color: #004545;
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #006565;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #004545;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #004545;
+    background-color: #022a2a;
+  }
+}

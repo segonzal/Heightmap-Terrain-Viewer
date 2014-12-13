@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Sebastian Gonzalez" />
+  <title>Heightmap Terrain Viewer | segonzal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- custom fonts -->
+  <link href='http://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+
+  <!-- attach CSS styles -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet" />
+
+  <!-- import THREE JS -->
+  <script type="text/javascript" src="js/three.min.js"></script>
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+
+  <!--  BODY PAGE CONTENT -->
+
+  <!-- navigation panel -->
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-main">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../">segonzal</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse-main">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="../#home">Home</a></li>
+          <li><a href="../#about">About</a></li>
+          <li><a href="../#interest">Interests</a></li>
+          <li><a href="../#information">Information</a></li>
+          <li><a href="../#demos">Demos</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+<!-- first section - description -->
+  <div id="description">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="preview-carousel" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+              <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+              <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+            </ol>
+           
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+              <div class="item active">
+                <img src="images/terrain1.png" alt="Valparaíso Bay rendered.">
+                <div class="carousel-caption">
+                    <h3>Rendering of Valparaíso Bay, Chile.</h3>
+                </div>
+              </div>
+              <div class="item">
+                <img src="images/terrain2.png" alt="The mountains near the Everest.">
+                <div class="carousel-caption">
+                    <h3>Snowy Mountains and Rocks near the Everest.</h3>
+                </div>
+              </div>
+              <div class="item">
+                <img src="images/grayscale2.png" alt="Input Heightmap.">
+                <div class="carousel-caption">
+                    <h3>Using a grayscale Heightmap from NASA's SRTM3 data.</h3>
+                </div>
+              </div>
+            </div>
+           
+            <!-- Controls -->
+            <a class="left carousel-control" href="#preview-carousel" role="button" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#preview-carousel" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+          </div> <!-- Carousel -->
+        </div>
+        <div class="col-sm-6">
+          <h1>Heightmap Terrain Viewer</h1>
+          <p class="lead">Creates a 3D renderization of a grayscale Heightmap.</p>
+          <ul>
+            <li>This WebGL renderization of heightmaps was created using Three.js.</li>
+            <li>The plane deformation was achieved using Vertex Displacement Mapping as a Shader.</li>
+            <li>Heightmaps were built from NASA's SRTM3 data, the HGT files used were found at <a href="http://www.viewfinderpanoramas.org/dem3.html">viewfinderpanoramas.org</a>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /first section -->
+
+  <!-- second section - desmo -->
+  <div id="demo">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="canvas-container"></div>
+        </div>
+        <div class="col-sm-6">
+          <h5>THIS DEMO REQUIRES WEBGL.</h5>
+          <p>To change between grayscale images press the button.</p>
+          <table>
+            <tr>
+              <td>Valparaíso - S33W072</td>
+              <td>Near Everest - N28E086</td>
+            </tr>
+            <tr>
+              <td><img src="images/grayscale1.png" alt="First grayscale image used." width="200" height="200"></td>
+              <td><img src="images/grayscale2.png" alt="Second grayscale image used." width="200" height="200"></td>
+            </tr>
+          </table>
+          <p>
+            <button type="button" class="btn btn-default" onclick="toggle();">Click Me!</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /second section -->
+
+  <!-- VERTEX SHADER -->
+    <script type="x-shader/x-vertex" id="vertexShader">
+      uniform sampler2D displacementMap;
+      varying vec2 vUv;
+      varying float zVal;
+
+      void main(){
+        vec4 newVertexPos;
+        
+        vUv = uv;
+        
+        float df = texture2D( displacementMap, vUv ).r;
+        newVertexPos = vec4(normal * df * 25.5, 0.0) + vec4(position,1.0);
+
+        zVal = df;
+
+        gl_Position = projectionMatrix * modelViewMatrix * newVertexPos;
+      }
+    </script>
+  <!-- /VERTEX SHADER-->
+
+  <!-- FRAGMENTSHADER -->
+    <script type="x-shader/x-vertex" id="fragmentShader">
+    #define M_PI 3.1415926535897932384626433832795
+    uniform sampler2D displacementMap;
+    uniform sampler2D snowTexture;
+    uniform sampler2D rockTexture;
+    uniform sampler2D grassTexture;
+    //for water
+    uniform sampler2D waterBaseTexture;
+    uniform float baseSpeed;
+    uniform sampler2D noiseTexture;
+    uniform float noiseScale;
+    uniform float alpha;
+    uniform float time;
+
+    //repeat texture factor
+    uniform float repeatTex;
+
+    varying vec2 vUv;
+    varying float zVal;
+
+    void main(){
+      if (zVal>0.0){
+        //recalculating new normals
+        float NORMAL_OFF = (1.0 /64.0);
+        vec3 off = vec3(-NORMAL_OFF, 0.0, NORMAL_OFF);
+
+        float s11 = texture2D(displacementMap,vUv).x;
+        float s01 = texture2D(displacementMap,vUv.xy+off.xy).x;
+        float s21 = texture2D(displacementMap,vUv.xy+off.zy).x;
+        float s10 = texture2D(displacementMap,vUv.xy+off.yx).x;
+        float s12 = texture2D(displacementMap,vUv.xy+off.yz).x;
+
+        vec3 va = normalize(vec3(off.z,0.0,s21-s11));
+        vec3 vb = normalize(vec3(0.0,off.z,s12-s11));
+
+        vec3 vNormal = normalize(cross(va,vb));
+        //--------------calculate azimuth
+
+        float phi;
+        float num = sqrt(pow(vNormal.x,2.0)+pow(vNormal.y,2.0));
+        if (vNormal.z>0.0){
+          phi = atan(num/vNormal.z);
+        } else if (vNormal.z == 0.0){
+          phi = M_PI / 2.0;
+        } else {
+          phi = M_PI + atan(num/vNormal.z);
+        }
+        //phi = (phi - M_PI) / (-2.0*M_PI);
+        vec4 RockColor;
+        vec4 PlainsColor;
+
+        float coef;
+        if (zVal>0.55) {coef=1.0;}
+        else if (zVal<0.45) {coef=0.0;}
+        else{coef = (zVal-0.45)/(0.55 -0.45);}
+
+        vec2 repeatedUv = fract(vUv*repeatTex);
+
+        PlainsColor = cos(phi) * (coef*texture2D(snowTexture,repeatedUv) + (1.0-coef)*texture2D(grassTexture,repeatedUv));
+        RockColor = sin(phi) * texture2D(rockTexture,repeatedUv);
+        
+        gl_FragColor =  RockColor + PlainsColor;
+      }
+      else {
+        //here goes the water
+        vec2 uvTimeShift = vUv + vec2(-0.7,1.5)*time*baseSpeed;
+        vec4 noiseGeneratorTimeShift = texture2D(noiseTexture,uvTimeShift);
+        vec2 uvNoiseTimeShift = vUv + noiseScale * vec2(noiseGeneratorTimeShift.r,noiseGeneratorTimeShift.b);
+        vec4 baseColor = texture2D(waterBaseTexture,fract(uvNoiseTimeShift*repeatTex));
+
+        baseColor.a = alpha;
+        gl_FragColor = baseColor;
+      }
+    }
+    </script>
+  <!-- /FRAGMENTSHADER -->
+
+  <!-- MAIN CODE-->
+  <script type="text/javascript" id="mainCode">
+  var container, renderer, scene, camera, mesh, start = Date.now(),
+  fov = 30,uniforms;
+
+  var heightMap = new THREE.ImageUtils.loadTexture('images/grayscale2.png');
+  var flag = false;
+  function toggle(){
+    flag = !flag;
+    if (flag){
+      heightMap = new THREE.ImageUtils.loadTexture('images/grayscale1.png');
+    }else{
+      heightMap = new THREE.ImageUtils.loadTexture('images/grayscale2.png');
+    }
+  }
+
+  var WIDTH,HEIGHT;
+
+  window.addEventListener('load', function() {
+    container = document.getElementById("canvas-container");
+
+    scene = new THREE.Scene();
+
+    WIDTH=500;
+    HEIGHT=500;
+
+    camera = new THREE.PerspectiveCamera(fov,WIDTH/HEIGHT,1,10000);
+      camera.position.set(0,60,170);
+      camera.lookAt(scene.position);
+
+      scene.add(camera);
+
+      // The chunk of earth
+      //=========================================
+
+      var repeatTexFactor = 2.0;
+
+      var snowTex = new THREE.ImageUtils.loadTexture('images/snow.png');
+      snowTex.wrapS = snowTex.wrapT = THREE.RepeatWrapping;
+      snowTex.repeat.set( repeatTexFactor, repeatTexFactor );
+
+      var rockTex = new THREE.ImageUtils.loadTexture('images/rock.png');
+      rockTex.wrapS = rockTex.wrapT = THREE.RepeatWrapping; 
+      rockTex.repeat.set( repeatTexFactor, repeatTexFactor );
+      
+      var grassTex = new THREE.ImageUtils.loadTexture('images/grass.png');
+      grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping; 
+      grassTex.repeat.set( repeatTexFactor, repeatTexFactor );
+      
+      var waterTex = new THREE.ImageUtils.loadTexture('images/water.png');
+      waterTex.wrapS = waterTex.wrapT = THREE.RepeatWrapping; 
+      waterTex.repeat.set( repeatTexFactor, repeatTexFactor );
+      
+      var noiseTex = new THREE.ImageUtils.loadTexture('images/cloud.png');
+      noiseTex.wrapS = noiseTex.wrapT = THREE.RepeatWrapping;
+      noiseTex.repeat.set( repeatTexFactor, repeatTexFactor );
+
+      uniforms = {
+        repeatTex: {
+          type: "f",
+          value: repeatTexFactor
+        },
+        displacementMap: {
+          type: "t",
+          value: heightMap
+        },
+        snowTexture: {
+          type: "t",
+          value: snowTex
+        },
+        rockTexture: {
+          type: "t",
+          value: rockTex
+        },
+        grassTexture: {
+          type: "t",
+          value: grassTex
+        },
+        //here goes for water
+        waterBaseTexture: {
+          type: "t",
+          value: waterTex
+        },
+        baseSpeed: {
+          type: "f",
+          value: 0.05
+        },
+        noiseTexture: {
+          type: "t",
+          value: noiseTex
+        },
+        noiseScale: {
+          type: "f",
+          value: 0.2
+        },
+        alpha: {
+          type: "f",
+          value: 0.8
+        },
+        time: {
+          type: "f",
+          value: 1.0
+        }
+      };
+
+      var mtTop = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: document.getElementById('vertexShader').textContent,
+        fragmentShader: document.getElementById('fragmentShader').textContent,
+        wireframe: false
+      });
+      mtTop.side = THREE.DoubleSide;
+      mtTop.transparent = true;
+
+      mesh = new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(120,120,200,200),
+        mtTop
+      );
+      
+      mesh.rotation.x = - Math.PI / 2;
+      scene.add(mesh);
+      
+      //=========================================
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(WIDTH,HEIGHT);
+      renderer.setClearColor(0xddddff, 1);
+
+      container.appendChild(renderer.domElement);
+
+    render();
+  })
+
+  function render(){
+      var now = Date.now()
+      var delta = (now-start);
+
+      mesh.rotation.z -= 0.0001*delta;
+      uniforms.time.value += 0.001*delta;
+      uniforms.displacementMap.value = heightMap;
+      start=now;
+      
+      renderer.render(scene,camera);
+      
+    requestAnimationFrame(render);
+  }
+  </script>
+  <!-- /MAIN CODE-->
+
+  <!-- footer -->
+  <footer>
+    <hr />
+    <div class="container">
+      <p class="text-right">Copyright &copy; Sebastián González 2014</p>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</html>
